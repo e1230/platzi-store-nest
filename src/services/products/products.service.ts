@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Product } from '../../entities/products/products.entity';
 @Injectable()
 export class ProductsService {
@@ -8,7 +8,7 @@ export class ProductsService {
       id: 1,
       name: 'Producto 1',
       description:
-        'Ullamco id irure exercitation aute culpa non ullamco duis aute proident ut nulla aliquip aute.',
+        'Ullamco id irure exercitvation aute culpa non ullamco duis aute proident ut nulla aliquip aute.',
       price: 122,
       stock: 0,
       image: '',
@@ -20,7 +20,11 @@ export class ProductsService {
   }
 
   findOne(id: number) {
-    return this.products.find((item) => item.id === id);
+    const product = this.products.find((item) => item.id === id);
+    if (!product) {
+      throw new NotFoundException(`Producto con id: ${id} no encontrado`);
+    }
+    return product;
   }
 
   create(payload: any) {
@@ -35,9 +39,10 @@ export class ProductsService {
   update(id: number, payload: any) {
     const productFound = this.findOne(id);
     let message = '';
-    if (productFound != undefined) {
-      this.products[productFound.id - 1] = {
-        id: id,
+    if (productFound) {
+      const index = this.products.findIndex((item) => item.id === id);
+      this.products[index] = {
+        ...productFound,
         ...payload,
       };
       message = 'Product updated';
@@ -50,8 +55,9 @@ export class ProductsService {
   delete(id: number) {
     const productFound = this.findOne(id);
     let message = '';
-    if (productFound != undefined) {
-      this.products.splice(productFound.id - 1, 1);
+    if (productFound) {
+      const index = this.products.findIndex((item) => item.id === id);
+      this.products.splice(index);
       message = 'product deleted';
     } else {
       message = 'product not found';
