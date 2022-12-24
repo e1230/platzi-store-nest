@@ -6,11 +6,11 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Query,
 } from '@nestjs/common';
+import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
 import { ProductsService } from '../../services/products/products.service';
 
 @Controller('products')
