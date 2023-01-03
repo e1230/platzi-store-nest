@@ -3,27 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
-import { HttpModule, HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
-  imports: [UsersModule, ProductsModule, HttpModule],
+  imports: [UsersModule, ProductsModule, DatabaseModule],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: 'TASKS',
-      useFactory: async (http: HttpService) => {
-        const tasks = await http.get(
-          'https://jsonplaceholder.typicode.com/todos',
-          {
-            headers: { 'Accept-Encoding': 'gzip,deflate,compress' },
-          },
-        );
-        return (await firstValueFrom(tasks)).data;
-      },
-      inject: [HttpService],
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

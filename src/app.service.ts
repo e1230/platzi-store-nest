@@ -5,6 +5,6 @@ export class AppService {
   constructor(@Inject('TASKS') private tasks: any[]) {}
   getHello(): string {
     console.log(this.tasks);
-    return 'Hola munSdo uwu!';
+    return 'Hola mundo uwu!';
   }
 }
