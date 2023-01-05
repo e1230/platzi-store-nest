@@ -1,9 +1,12 @@
 import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
-import { PartialType } from '@nestjs/mapped-types';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @IsNotEmpty()
   @IsEmail()
+  @ApiProperty({
+    description: 'email`s user',
+  })
   readonly email: string;
   @IsNotEmpty()
   @IsString()
