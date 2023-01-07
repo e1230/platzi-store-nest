@@ -1,6 +1,16 @@
 import { Module, Global } from '@nestjs/common';
 import { HttpService, HttpModule } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { Client } from 'pg';
+
+const client = new Client({
+  user: 'root',
+  host: 'localhost',
+  database: 'my_db',
+  password: '123456',
+  port: 5432,
+});
+client.connect();
 
 @Global()
 @Module({
@@ -19,7 +29,11 @@ import { firstValueFrom } from 'rxjs';
       },
       inject: [HttpService],
     },
+    {
+      provide: 'PG',
+      useValue: client,
+    },
   ],
-  exports: ['TASKS'],
+  exports: ['TASKS', 'PG'],
 })
 export class DatabaseModule {}
