@@ -2,15 +2,8 @@ import { Module, Global } from '@nestjs/common';
 import { HttpService, HttpModule } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { Client } from 'pg';
-
-const client = new Client({
-  user: 'root',
-  host: 'localhost',
-  database: 'my_db',
-  password: '123456',
-  port: 5432,
-});
-client.connect();
+import config from 'src/config';
+import { ConfigType } from '@nestjs/config';
 
 @Global()
 @Module({
@@ -31,7 +24,19 @@ client.connect();
     },
     {
       provide: 'PG',
-      useValue: client,
+      useFactory: (configService: ConfigType<typeof config>) => {
+        const { user, host, dbName, password, port } = configService.postgres;
+        const client = new Client({
+          user,
+          host,
+          database: dbName,
+          password,
+          port,
+        });
+        client.connect();
+        return client;
+      },
+      inject: [config.KEY],
     },
   ],
   exports: ['TASKS', 'PG'],
