@@ -37,14 +37,10 @@ export class ProductsController {
   @Get(':id')
   @HttpCode(HttpStatus.ACCEPTED)
   getProduct(@Param('id', ParseIntPipe) id: number): {} {
-    // return {
-    //   message: `product ${id}`,
-    // };
     return this.productsService.findOne(id);
   }
   @Post()
   create(@Body() payload: CreateProductDto) {
-    // return { message: 'accion de crear', payload };
     this.productsService.create(payload);
   }
   @Put(':id')

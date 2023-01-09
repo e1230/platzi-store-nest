@@ -16,9 +16,9 @@ import {
   UpdateCustomerDto,
 } from '../../dto/customers/customers.dto';
 
-@ApiTags('costumers')
-@Controller('costumers')
-export class CostumersController {
+@ApiTags('customers')
+@Controller('customers')
+export class CustomersController {
   constructor(private customersService: CustomersService) {}
 
   @Get()
