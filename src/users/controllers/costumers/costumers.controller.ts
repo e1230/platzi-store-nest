@@ -16,9 +16,9 @@ import {
   UpdateCustomerDto,
 } from '../../dto/customers/customers.dto';
 
-@ApiTags('costumers')
-@Controller('costumers')
-export class CostumersController {
+@ApiTags('customers')
+@Controller('customers')
+export class CustomersController {
   constructor(private customersService: CustomersService) {}
 
   @Get()
@@ -31,21 +31,21 @@ export class CostumersController {
     return this.customersService.findOne(id);
   }
 
-  // @Post()
-  // create(@Body() payload: CreateCustomerDto) {
-  //   return this.customersService.create(payload);
-  // }
+  @Post()
+  create(@Body() payload: CreateCustomerDto) {
+    return this.customersService.create(payload);
+  }
 
-  // @Put(':id')
-  // update(
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @Body() payload: UpdateCustomerDto,
-  // ) {
-  //   return this.customersService.update(id, payload);
-  // }
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() payload: UpdateCustomerDto,
+  ) {
+    return this.customersService.update(id, payload);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id', ParseIntPipe) id: number) {
-  //   return this.customersService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.customersService.remove(+id);
+  }
 }

@@ -15,12 +15,12 @@ export class UsersService {
     @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
 
-  findAll() {
-    return this.userRepo.find();
+  async findAll() {
+    return await this.userRepo.find();
   }
 
-  findOne(id: number) {
-    const user = this.userRepo.findBy({ id });
+  async findOne(id: number) {
+    const user = await this.userRepo.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`Usuario con id: ${id} no encontrado`);
     }
@@ -35,41 +35,17 @@ export class UsersService {
     };
   }
 
-  // create(payload: CreateUserDto) {
-  //   this.counterId++;
-  //   const newUser = {
-  //     id: this.counterId,
-  //     ...payload,
-  //   };
-  //   this.users.push(newUser);
-  //   return newUser;
-  // }
-  // update(id: number, payload: UpdateUserDto) {
-  //   const userFound = this.findOne(id);
-  //   let message = '';
-  //   if (userFound) {
-  //     const index = this.users.findIndex((item) => item.id === id);
-  //     this.users[index] = {
-  //       ...userFound,
-  //       ...payload,
-  //     };
-  //     message = 'User updated';
-  //   } else {
-  //     message = 'User not found';
-  //   }
-  //   return message;
-  // }
+  async create(payload: CreateUserDto) {
+    const newUser = await this.userRepo.create(payload);
+    return this.userRepo.save(newUser);
+  }
+  async update(id: number, payload: UpdateUserDto) {
+    const userFound = await this.userRepo.findOneBy({ id });
+    this.userRepo.merge(userFound, payload);
+    return this.userRepo.save(userFound);
+  }
 
-  // remove(id: number) {
-  //   const userFound = this.findOne(id);
-  //   let message = '';
-  //   if (userFound) {
-  //     const index = this.users.findIndex((item) => item.id === id);
-  //     this.users.splice(index);
-  //     message = 'User deleted';
-  //   } else {
-  //     message = 'User not found';
-  //   }
-  //   return message;
-  // }
+  async remove(id: number) {
+    return await this.userRepo.delete(id);
+  }
 }

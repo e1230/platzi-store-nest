@@ -8,44 +8,30 @@ import { Repository } from 'typeorm';
 export class BrandsService {
   constructor(@InjectRepository(Brand) private brandRepo: Repository<Brand>) {}
 
-  findAll() {
-    return this.brandRepo.find();
+  async findAll() {
+    return await this.brandRepo.find();
   }
 
-  findOne(id: number) {
-    const product = this.brandRepo.findOneBy({ id });
+  async findOne(id: number) {
+    const product = await this.brandRepo.findOneBy({ id });
     if (!product) {
       throw new NotFoundException(`Brand #${id} not found`);
     }
     return product;
   }
 
-  // create(data: CreateBrandDto) {
-  //   this.counterId = this.counterId + 1;
-  //   const newBrand = {
-  //     id: this.counterId,
-  //     ...data,
-  //   };
-  //   this.brands.push(newBrand);
-  //   return newBrand;
-  // }
+  async create(payload: CreateBrandDto) {
+    const newBrand = await this.brandRepo.create(payload);
+    return this.brandRepo.save(newBrand);
+  }
 
-  // update(id: number, changes: UpdateBrandDto) {
-  //   const brand = this.findOne(id);
-  //   const index = this.brands.findIndex((item) => item.id === id);
-  //   this.brands[index] = {
-  //     ...brand,
-  //     ...changes,
-  //   };
-  //   return this.brands[index];
-  // }
+  async update(id: number, payload: UpdateBrandDto) {
+    const brandFound = await this.brandRepo.findOneBy({ id });
+    await this.brandRepo.merge(brandFound, payload);
+    return this.brandRepo.save(brandFound);
+  }
 
-  // remove(id: number) {
-  //   const index = this.brands.findIndex((item) => item.id === id);
-  //   if (index === -1) {
-  //     throw new NotFoundException(`Brand #${id} not found`);
-  //   }
-  //   this.brands.splice(index, 1);
-  //   return true;
-  // }
+  async remove(id: number) {
+    return await this.brandRepo.delete(id);
+  }
 }

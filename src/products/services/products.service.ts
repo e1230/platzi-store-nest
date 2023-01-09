@@ -12,53 +12,35 @@ export class ProductsService {
     @InjectRepository(Product) private productRepo: Repository<Product>,
   ) {}
 
-  findAll() {
-    return this.productRepo.find();
+  async findAll() {
+    return await this.productRepo.find();
   }
 
-  findOne(id: number) {
-    const product = this.productRepo.findOneBy({ id });
+  async findOne(id: number) {
+    const product = await this.productRepo.findOneBy({ id });
     if (!product) {
       throw new NotFoundException(`Producto con id: ${id} no encontrado`);
     }
     return product;
   }
 
-  // create(payload: CreateProductDto) {
-  //   this.counterId++;
-  //   const newProduct = {
-  //     id: this.counterId,
-  //     ...payload,
-  //   };
-  //   this.products.push(newProduct);
-  //   return newProduct;
-  // }
-  // update(id: number, payload: UpdateProductDto) {
-  //   const productFound = this.findOne(id);
-  //   let message = '';
-  //   if (productFound) {
-  //     const index = this.products.findIndex((item) => item.id === id);
-  //     this.products[index] = {
-  //       ...productFound,
-  //       ...payload,
-  //     };
-  //     message = 'Product updated';
-  //   } else {
-  //     message = 'Product not found';
-  //   }
-  //   return message;
-  // }
+  async create(payload: CreateProductDto) {
+    // const newProduct = new Product();
+    // newProduct.name = payload.name;
+    // newProduct.description = payload.description;
+    // newProduct.price = payload.price;
+    // newProduct.stock = payload.stock;
+    // newProduct.image = payload.image;
+    const newProduct = await this.productRepo.create(payload);
+    return this.productRepo.save(newProduct);
+  }
+  async update(id: number, payload: UpdateProductDto) {
+    const productFound = await this.productRepo.findOneBy({ id });
+    this.productRepo.merge(productFound, payload);
+    return this.productRepo.save(productFound);
+  }
 
-  // delete(id: number) {
-  //   const productFound = this.findOne(id);
-  //   let message = '';
-  //   if (productFound) {
-  //     const index = this.products.findIndex((item) => item.id === id);
-  //     this.products.splice(index);
-  //     message = 'product deleted';
-  //   } else {
-  //     message = 'product not found';
-  //   }
-  //   return message;
-  // }
+  async delete(id: number) {
+    return await this.productRepo.delete(id);
+  }
 }

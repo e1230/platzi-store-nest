@@ -8,7 +8,7 @@ export class CreateCustomerDto {
   @IsNotEmpty()
   @IsString()
   readonly lastName: string;
-  @IsPhoneNumber()
+  @IsPhoneNumber('CO')
   readonly phone?: string;
 }
 export class UpdateCustomerDto extends PartialType(CreateCustomerDto) {}

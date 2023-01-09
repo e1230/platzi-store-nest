@@ -13,44 +13,30 @@ export class CustomersService {
     @InjectRepository(Customer) private customerRepo: Repository<Customer>,
   ) {}
 
-  findAll() {
-    return this.customerRepo.find();
+  async findAll() {
+    return await this.customerRepo.find();
   }
 
-  findOne(id: number) {
-    const customer = this.customerRepo.findBy({ id });
+  async findOne(id: number) {
+    const customer = await this.customerRepo.findOneBy({ id });
     if (!customer) {
       throw new NotFoundException(`Customer #${id} not found`);
     }
     return customer;
   }
 
-  // create(data: CreateCustomerDto) {
-  //   this.counterId = this.counterId + 1;
-  //   const newCustomer = {
-  //     id: this.counterId,
-  //     ...data,
-  //   };
-  //   this.customers.push(newCustomer);
-  //   return newCustomer;
-  // }
+  async create(payload: CreateCustomerDto) {
+    const newCustomer = await this.customerRepo.create(payload);
+    return this.customerRepo.save(newCustomer);
+  }
 
-  // update(id: number, changes: UpdateCustomerDto) {
-  //   const customer = this.findOne(id);
-  //   const index = this.customers.findIndex((item) => item.id === id);
-  //   this.customers[index] = {
-  //     ...customer,
-  //     ...changes,
-  //   };
-  //   return this.customers[index];
-  // }
+  async update(id: number, payload: UpdateCustomerDto) {
+    const customerFound = await this.customerRepo.findOneBy({ id });
+    this.customerRepo.merge(customerFound, payload);
+    return this.customerRepo.save(customerFound);
+  }
 
-  // remove(id: number) {
-  //   const index = this.customers.findIndex((item) => item.id === id);
-  //   if (index === -1) {
-  //     throw new NotFoundException(`Customer #${id} not found`);
-  //   }
-  //   this.customers.splice(index, 1);
-  //   return true;
-  // }
+  async remove(id: number) {
+    return await this.customerRepo.delete(id);
+  }
 }
