@@ -5,12 +5,14 @@ import {
   UpdateProductDto,
 } from '../../products/dto/products.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { BrandsService } from './brands/brands.service';
+import { Category } from '../entities/categories/categories.entity';
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product) private productRepo: Repository<Product>,
+    @InjectRepository(Category) private categoryRepo: Repository<Category>,
     private brandService: BrandsService,
   ) {}
 
@@ -23,7 +25,7 @@ export class ProductsService {
   async findOne(id: number) {
     const product = await this.productRepo.findOne({
       where: { id },
-      relations: ['brand'],
+      relations: ['brand', 'categories'],
     });
     if (!product) {
       throw new NotFoundException(`Producto con id: ${id} no encontrado`);
@@ -39,16 +41,22 @@ export class ProductsService {
     // newProduct.stock = payload.stock;
     // newProduct.image = payload.image;
     const newProduct = await this.productRepo.create(payload);
-    if (payload.brandID) {
-      const brand = await this.brandService.findOne(payload.brandID);
+    if (payload.brandId) {
+      const brand = await this.brandService.findOne(payload.brandId);
       newProduct.brand = brand;
+    }
+    if (payload.categoriesIds) {
+      const categories = await this.categoryRepo.findBy({
+        id: In(payload.categoriesIds),
+      });
+      newProduct.categories = categories;
     }
     return this.productRepo.save(newProduct);
   }
   async update(id: number, payload: UpdateProductDto) {
     const productFound = await this.productRepo.findOneBy({ id });
-    if (payload.brandID) {
-      const brand = await this.brandService.findOne(payload.brandID);
+    if (payload.brandId) {
+      const brand = await this.brandService.findOne(payload.brandId);
       productFound.brand = brand;
     }
     this.productRepo.merge(productFound, payload);
