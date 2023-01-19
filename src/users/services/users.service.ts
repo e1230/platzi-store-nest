@@ -1,32 +1,36 @@
 import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { User } from 'src/users/entities/users.entity';
 import { CreateUserDto, UpdateUserDto } from '../../users/dto/users.dto';
-import { Order } from '../entities/orders/order.entity';
 import { ProductsService } from '../../products/services/products.service';
-import { ConfigService } from '@nestjs/config';
-import { Client } from 'pg';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CustomersService } from './customers/customers.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private productService: ProductsService,
     @InjectRepository(User) private userRepo: Repository<User>,
+    private customerService: CustomersService,
   ) {}
 
   async findAll() {
-    return await this.userRepo.find();
+    return await this.userRepo.find({
+      relations: ['customer'],
+    });
   }
 
-  async findOne(id: number) {
-    const user = await this.userRepo.findOneBy({ id });
+  async findOne(id: string) {
+    const user = await this.userRepo.findOne({
+      where: { id },
+      relations: ['customer'],
+    });
     if (!user) {
       throw new NotFoundException(`Usuario con id: ${id} no encontrado`);
     }
     return user;
   }
-  async getOrdersByUser(id: number) {
+  async getOrdersByUser(id: string) {
     const user = this.findOne(id);
     return {
       date: new Date(),
@@ -37,9 +41,13 @@ export class UsersService {
 
   async create(payload: CreateUserDto) {
     const newUser = await this.userRepo.create(payload);
+    if (payload.customerId) {
+      const customer = await this.customerService.findOne(payload.customerId);
+      newUser.customer = customer;
+    }
     return this.userRepo.save(newUser);
   }
-  async update(id: number, payload: UpdateUserDto) {
+  async update(id: string, payload: UpdateUserDto) {
     const userFound = await this.userRepo.findOneBy({ id });
     this.userRepo.merge(userFound, payload);
     return this.userRepo.save(userFound);

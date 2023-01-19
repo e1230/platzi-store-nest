@@ -17,7 +17,7 @@ export class CustomersService {
     return await this.customerRepo.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const customer = await this.customerRepo.findOneBy({ id });
     if (!customer) {
       throw new NotFoundException(`Customer #${id} not found`);
@@ -30,7 +30,7 @@ export class CustomersService {
     return this.customerRepo.save(newCustomer);
   }
 
-  async update(id: number, payload: UpdateCustomerDto) {
+  async update(id: string, payload: UpdateCustomerDto) {
     const customerFound = await this.customerRepo.findOneBy({ id });
     this.customerRepo.merge(customerFound, payload);
     return this.customerRepo.save(customerFound);
