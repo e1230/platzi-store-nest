@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import {
   Body,
   Controller,
@@ -29,6 +30,7 @@ export class ProductsController {
     return this.productsService.findAll();
   }
   @Get('filter')
+  // eslint-disable-next-line @typescript-eslint/ban-types
   getProductFilter(): {} {
     return {
       message: `soy un filter`,

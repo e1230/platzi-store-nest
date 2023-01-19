@@ -6,18 +6,25 @@ import {
 } from '../../products/dto/products.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { BrandsService } from './brands/brands.service';
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product) private productRepo: Repository<Product>,
+    private brandService: BrandsService,
   ) {}
 
   async findAll() {
-    return await this.productRepo.find();
+    return await this.productRepo.find({
+      relations: ['brand'],
+    });
   }
 
   async findOne(id: number) {
-    const product = await this.productRepo.findOneBy({ id });
+    const product = await this.productRepo.findOne({
+      where: { id },
+      relations: ['brand'],
+    });
     if (!product) {
       throw new NotFoundException(`Producto con id: ${id} no encontrado`);
     }
@@ -32,10 +39,18 @@ export class ProductsService {
     // newProduct.stock = payload.stock;
     // newProduct.image = payload.image;
     const newProduct = await this.productRepo.create(payload);
+    if (payload.brandID) {
+      const brand = await this.brandService.findOne(payload.brandID);
+      newProduct.brand = brand;
+    }
     return this.productRepo.save(newProduct);
   }
   async update(id: number, payload: UpdateProductDto) {
     const productFound = await this.productRepo.findOneBy({ id });
+    if (payload.brandID) {
+      const brand = await this.brandService.findOne(payload.brandID);
+      productFound.brand = brand;
+    }
     this.productRepo.merge(productFound, payload);
     return this.productRepo.save(productFound);
   }
