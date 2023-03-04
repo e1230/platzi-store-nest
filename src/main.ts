@@ -9,6 +9,9 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true, //eliminar campos extra que no esten el dto
       forbidNonWhitelisted: true, //alertar que esta ingresando campos prohibidos
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
   );
   const config = new DocumentBuilder()

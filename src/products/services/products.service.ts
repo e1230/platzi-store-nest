@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { BrandsService } from './brands/brands.service';
 import { Category } from '../entities/categories/categories.entity';
+import { FilterProductsDto } from '../dto/products.dto';
 @Injectable()
 export class ProductsService {
   constructor(
@@ -16,7 +17,15 @@ export class ProductsService {
     private brandService: BrandsService,
   ) {}
 
-  async findAll() {
+  async findAll(params?: FilterProductsDto) {
+    if (params) {
+      const { limit, offset } = params;
+      return await this.productRepo.find({
+        relations: ['brand'],
+        take: limit,
+        skip: offset,
+      });
+    }
     return await this.productRepo.find({
       relations: ['brand'],
     });

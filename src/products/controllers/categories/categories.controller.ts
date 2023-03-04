@@ -10,8 +10,10 @@ import {
 import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
 import { CategoriesService } from '../../services/categories/categories.service';
 import { ApiTags } from '@nestjs/swagger';
+import { Query } from '@nestjs/common';
 import {
   CreateCategoryDto,
+  FilterCategoriesDto,
   UpdateCategoryDto,
 } from '../../dto/categories/categories.dto';
 
@@ -21,8 +23,8 @@ export class CategoriesController {
   constructor(private categoriesService: CategoriesService) {}
 
   @Get()
-  findAll() {
-    return this.categoriesService.findAll();
+  findAll(@Query() params: FilterCategoriesDto) {
+    return this.categoriesService.findAll(params);
   }
 
   @Get(':id')

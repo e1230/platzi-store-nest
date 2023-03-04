@@ -8,9 +8,14 @@ import {
   Put,
 } from '@nestjs/common';
 import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
-import { CreateUserDto, UpdateUserDto } from 'src/users/dto/users.dto';
+import {
+  CreateUserDto,
+  FilterUsersDto,
+  UpdateUserDto,
+} from 'src/users/dto/users.dto';
 import { UsersService } from '../services/users.service';
 import { ApiTags } from '@nestjs/swagger';
+import { Query } from '@nestjs/common';
 
 @ApiTags('users')
 @Controller('users')
@@ -18,8 +23,8 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() params: FilterUsersDto) {
+    return this.usersService.findAll(params);
   }
   @Get(':id')
   get(@Param('id', ParseIntPipe) id: string) {
