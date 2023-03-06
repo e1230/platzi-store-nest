@@ -1,3 +1,4 @@
+import { Exclude, Expose } from 'class-transformer';
 import {
   CreateDateColumn,
   PrimaryGeneratedColumn,
@@ -31,6 +32,33 @@ export class Order {
   })
   updateAt: Date;
 
+  @Exclude()
   @OneToMany(() => OrderProduct, (item) => item.order)
   products: OrderProduct[];
+
+  @Expose()
+  get items() {
+    if (this.products) {
+      return this.products
+        .filter((product) => !!product)
+        .map((item) => ({
+          ...item.product,
+          quantity: item.quantity,
+          itemId: item.id,
+        }));
+    }
+    return [];
+  }
+  @Expose()
+  get total() {
+    if (this.products) {
+      return this.products
+        .filter((item) => !!item)
+        .reduce((total, item) => {
+          const totalItem = item.product.price * item.quantity;
+          return total + totalItem;
+        }, 0);
+    }
+    return 0;
+  }
 }
