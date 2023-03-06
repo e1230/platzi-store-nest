@@ -39,4 +39,4 @@ lerna-debug.log*
 /postgres_data
 
 #migrations
-src/database/migrations
+

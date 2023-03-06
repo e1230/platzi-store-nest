@@ -9,15 +9,15 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'users' })
 export class User {
   @PrimaryColumn()
   id: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ name: 'first_name', type: 'varchar', length: 100 })
   firstName: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ name: 'last_name', type: 'varchar', length: 100 })
   lastName: string;
 
   @Column({ type: 'varchar', length: 100, unique: true })
@@ -30,17 +30,19 @@ export class User {
   role: string;
 
   @CreateDateColumn({
+    name: 'create_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createAt: Date;
   @UpdateDateColumn({
+    name: 'update_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateAt: Date;
 
   @OneToOne(() => Customer, (Customer) => Customer.user, { nullable: true })
-  @JoinColumn()
+  @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 }
